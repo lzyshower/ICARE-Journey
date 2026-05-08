@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bingjie's ICARE Journey</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preload" href="assets/bg.webp" as="image" fetchpriority="high">
 <style>
 * {
   margin: 0;
@@ -12,19 +14,21 @@
   font-family: 'Arial', sans-serif;
 }
 html,body {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100%;
   overflow: hidden;
 }
 .container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
   position: relative;
 }
 .bg {
-  width: 100vw;
-  height: 100vh;
-  background: url(bg.png) no-repeat center;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: url("assets/bg.webp") no-repeat center;
   background-size: cover;
   position: absolute;
   top: 0;
@@ -38,17 +42,22 @@ html,body {
   background-repeat: no-repeat;
   background-position: center;
   background-color: transparent;
+  border: 0;
   border-radius: 0;
   color: transparent;
+  font-size: 0;
+  line-height: 0;
   position: absolute;
   cursor: pointer;
+  appearance: none;
+  padding: 0;
 }
 /* 按键精准定位 */
-.btn1 { left: 0%; bottom: 12%; background-image: url(btn1.png); }
-.btn2 { left: 33%; bottom: 0%; background-image: url(btn2.png); }
-.btn3 { left: 48%; bottom: 16%; background-image: url(btn3.png); }
-.btn4 { right: 15%; top: 48%; background-image: url(btn4.png); }
-.btn5 { right: 0%; top: 20%; background-image: url(btn5.png); }
+.btn1 { left: 0%; bottom: 12%; background-image: url("assets/btn1.webp"); }
+.btn2 { left: 33%; bottom: 0%; background-image: url("assets/btn2.webp"); }
+.btn3 { left: 48%; bottom: 16%; background-image: url("assets/btn3.webp"); }
+.btn4 { right: 15%; top: 48%; background-image: url("assets/btn4.webp"); }
+.btn5 { right: 0%; top: 20%; background-image: url("assets/btn5.webp"); }
 
 /* 进度条 */
 .progress {
@@ -94,6 +103,7 @@ html,body {
 .modal-top-img {
   width: 80px;
   height: 80px;
+  object-fit: contain;
   margin: 0 auto 20px;
 }
 .m-title {
@@ -114,6 +124,9 @@ html,body {
   gap: 10px;
   cursor: pointer;
   text-align: left;
+  border: 0;
+  width: 100%;
+  font-family: inherit;
 }
 .opt img {
   width: 24px;
@@ -125,6 +138,9 @@ html,body {
   color: #666;
   font-size: 16px;
   cursor: pointer;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
 }
 .txt {
   line-height: 1.5;
@@ -136,50 +152,50 @@ html,body {
 
 <div class="container">
   <div class="bg"></div>
-  <div class="btn btn1" onclick="openQ(1)"></div>
-  <div class="btn btn2" onclick="openQ(2)"></div>
-  <div class="btn btn3" onclick="openQ(3)"></div>
-  <div class="btn btn4" onclick="openQ(4)"></div>
-  <div class="btn btn5" onclick="openQ(5)"></div>
+  <button class="btn btn1" type="button" onclick="openQ(1)" aria-label="Open question 1">Question 1</button>
+  <button class="btn btn2" type="button" onclick="openQ(2)" aria-label="Open question 2">Question 2</button>
+  <button class="btn btn3" type="button" onclick="openQ(3)" aria-label="Open question 3">Question 3</button>
+  <button class="btn btn4" type="button" onclick="openQ(4)" aria-label="Open question 4">Question 4</button>
+  <button class="btn btn5" type="button" onclick="openQ(5)" aria-label="Open question 5">Question 5</button>
   <div class="progress">
-    <img src="coin.png" alt="coin">
+    <img src="assets/coin.webp" width="20" height="20" alt="coin" decoding="async">
     <span>ICARE Journey Progress: <span id="gotNum">0</span>/5</span>
   </div>
 </div>
 
 <!-- 选择题弹窗 -->
-<div class="modal" id="modal">
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
-    <img class="modal-top-img" src="question.png" alt="question girl">
+    <img class="modal-top-img" data-src="assets/question.webp" width="80" height="80" alt="question girl" decoding="async">
     <div class="m-title" id="modalTitle"></div>
-    <div class="opt" onclick="chooseA()">
-      <img src="mushroom.png" alt="mushroom">
+    <button class="opt" type="button" onclick="chooseA()">
+      <img data-src="assets/mushroom.webp" width="24" height="24" alt="mushroom" decoding="async">
       <span id="optionA"></span>
-    </div>
-    <div class="opt" onclick="chooseB()">
-      <img src="mushroom.png" alt="mushroom">
+    </button>
+    <button class="opt" type="button" onclick="chooseB()">
+      <img data-src="assets/mushroom.webp" width="24" height="24" alt="mushroom" decoding="async">
       <span id="optionB"></span>
-    </div>
-    <div class="close-btn" onclick="closeModal()">Try Again</div>
+    </button>
+    <button class="close-btn" type="button" onclick="closeModal()">Try Again</button>
   </div>
 </div>
 
 <!-- 获得道具弹窗（已去掉顶部插图） -->
-<div class="modal" id="rewardModal">
+<div class="modal" id="rewardModal" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
   <div class="modal-box">
     <div class="m-title" id="rewardTitle"></div>
     <div class="txt" id="rewardDesc"></div>
-    <div class="close-btn" onclick="closeReward()">Continue Adventure</div>
+    <button class="close-btn" type="button" onclick="closeReward()">Continue Adventure</button>
   </div>
 </div>
 
 <!-- 通关弹窗 -->
-<div class="modal" id="winModal">
+<div class="modal" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
   <div class="modal-box">
-    <img class="modal-top-img" src="win_girl.png" alt="win girl">
-    <div class="m-title">🏆 Congratulations on Clearing the Game</div>
+    <img class="modal-top-img" data-src="assets/win_girl.webp" width="80" height="80" alt="win girl" decoding="async">
+    <div class="m-title" id="winTitle">🏆 Congratulations on Clearing the Game</div>
     <div class="txt">You have successfully completed the project and the ICARE Journey!</div>
-    <div class="close-btn" onclick="resetGame()">Play Again</div>
+    <button class="close-btn" type="button" onclick="resetGame()">Play Again</button>
   </div>
 </div>
 
@@ -187,6 +203,7 @@ html,body {
 let currentId = 0;
 let items = {1:false,2:false,3:false,4:false,5:false};
 let gotNum = 0;
+let pendingWin = false;
 
 const questions = {
   1: {
@@ -232,7 +249,19 @@ function openQ(id){
   document.getElementById("modalTitle").innerText = q.title;
   document.getElementById("optionA").innerText = q.a;
   document.getElementById("optionB").innerText = q.b;
-  document.getElementById("modal").style.display = "flex";
+  showModal("modal");
+}
+
+function loadLazyImages(container){
+  container.querySelectorAll("img[data-src]").forEach((img) => {
+    if(!img.src) img.src = img.dataset.src;
+  });
+}
+
+function showModal(id){
+  const modal = document.getElementById(id);
+  loadLazyImages(modal);
+  modal.style.display = "flex";
 }
 
 function chooseA(){
@@ -246,12 +275,10 @@ function chooseA(){
   const q = questions[currentId];
   document.getElementById("rewardTitle").innerText = q.rewardTitle;
   document.getElementById("rewardDesc").innerText = q.rewardDesc;
-  document.getElementById("rewardModal").style.display = "flex";
+  showModal("rewardModal");
 
   if(gotNum >= 5){
-    setTimeout(()=>{
-      document.getElementById("winModal").style.display = "flex";
-    },600);
+    pendingWin = true;
   }
 }
 
@@ -263,10 +290,15 @@ function closeModal(){
 }
 function closeReward(){
   document.getElementById("rewardModal").style.display = "none";
+  if(pendingWin){
+    pendingWin = false;
+    showModal("winModal");
+  }
 }
 function resetGame(){
   items = {1:false,2:false,3:false,4:false,5:false};
   gotNum = 0;
+  pendingWin = false;
   document.getElementById("gotNum").innerText = 0;
   document.getElementById("winModal").style.display = "none";
 }
