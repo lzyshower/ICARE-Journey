@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bingjie's ICARE Journey</title>
-<link rel="icon" href="favicon.ico">
-<link rel="preload" href="assets/bg.webp" as="image" fetchpriority="high">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>">
+<link rel="preload" href="assets/bg.webp?v=2" as="image" fetchpriority="high">
+<link rel="preload" href="assets/ui-sprite.webp?v=2" as="image" fetchpriority="high">
 <style>
 * {
   margin: 0;
@@ -28,7 +29,7 @@ html,body {
   width: 100%;
   min-height: 100vh;
   min-height: 100svh;
-  background: url("assets/bg.webp") no-repeat center;
+  background: url("assets/bg.webp?v=2") no-repeat center;
   background-size: cover;
   position: absolute;
   top: 0;
@@ -38,7 +39,8 @@ html,body {
 .btn {
   width: 100px;
   height: 100px;
-  background-size: contain;
+  background-image: url("assets/ui-sprite.webp?v=2");
+  background-size: 900% 100%;
   background-repeat: no-repeat;
   background-position: center;
   background-color: transparent;
@@ -53,11 +55,22 @@ html,body {
   padding: 0;
 }
 /* 按键精准定位 */
-.btn1 { left: 0%; bottom: 12%; background-image: url("assets/btn1.webp"); }
-.btn2 { left: 33%; bottom: 0%; background-image: url("assets/btn2.webp"); }
-.btn3 { left: 48%; bottom: 16%; background-image: url("assets/btn3.webp"); }
-.btn4 { right: 15%; top: 48%; background-image: url("assets/btn4.webp"); }
-.btn5 { right: 0%; top: 20%; background-image: url("assets/btn5.webp"); }
+.btn1 { left: 0%; bottom: 12%; background-position: 0% 0; }
+.btn2 { left: 33%; bottom: 0%; background-position: 12.5% 0; }
+.btn3 { left: 48%; bottom: 16%; background-position: 25% 0; }
+.btn4 { right: 15%; top: 48%; background-position: 37.5% 0; }
+.btn5 { right: 0%; top: 20%; background-position: 50% 0; }
+
+.sprite-img {
+  display: inline-block;
+  background-image: url("assets/ui-sprite.webp?v=2");
+  background-size: 900% 100%;
+  background-repeat: no-repeat;
+}
+.sprite-coin { background-position: 62.5% 0; }
+.sprite-mushroom { background-position: 75% 0; }
+.sprite-question { background-position: 87.5% 0; }
+.sprite-win { background-position: 100% 0; }
 
 /* 进度条 */
 .progress {
@@ -74,9 +87,10 @@ html,body {
   align-items: center;
   gap: 8px;
 }
-.progress img {
+.coin-icon {
   width: 20px;
   height: 20px;
+  flex: 0 0 auto;
 }
 
 /* 弹窗通用 */
@@ -101,9 +115,9 @@ html,body {
   position: relative;
 }
 .modal-top-img {
+  display: block;
   width: 80px;
   height: 80px;
-  object-fit: contain;
   margin: 0 auto 20px;
 }
 .m-title {
@@ -128,9 +142,10 @@ html,body {
   width: 100%;
   font-family: inherit;
 }
-.opt img {
+.option-icon {
   width: 24px;
   height: 24px;
+  flex: 0 0 auto;
   margin-top: 2px;
 }
 .close-btn {
@@ -158,7 +173,7 @@ html,body {
   <button class="btn btn4" type="button" onclick="openQ(4)" aria-label="Open question 4">Question 4</button>
   <button class="btn btn5" type="button" onclick="openQ(5)" aria-label="Open question 5">Question 5</button>
   <div class="progress">
-    <img src="assets/coin.webp" width="20" height="20" alt="coin" decoding="async">
+    <span class="sprite-img sprite-coin coin-icon" role="img" aria-label="coin"></span>
     <span>ICARE Journey Progress: <span id="gotNum">0</span>/5</span>
   </div>
 </div>
@@ -166,14 +181,14 @@ html,body {
 <!-- 选择题弹窗 -->
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
-    <img class="modal-top-img" data-src="assets/question.webp" width="80" height="80" alt="question girl" decoding="async">
+    <span class="sprite-img sprite-question modal-top-img" role="img" aria-label="question girl"></span>
     <div class="m-title" id="modalTitle"></div>
     <button class="opt" type="button" onclick="chooseA()">
-      <img data-src="assets/mushroom.webp" width="24" height="24" alt="mushroom" decoding="async">
+      <span class="sprite-img sprite-mushroom option-icon" role="img" aria-label="mushroom"></span>
       <span id="optionA"></span>
     </button>
     <button class="opt" type="button" onclick="chooseB()">
-      <img data-src="assets/mushroom.webp" width="24" height="24" alt="mushroom" decoding="async">
+      <span class="sprite-img sprite-mushroom option-icon" role="img" aria-label="mushroom"></span>
       <span id="optionB"></span>
     </button>
     <button class="close-btn" type="button" onclick="closeModal()">Try Again</button>
@@ -192,7 +207,7 @@ html,body {
 <!-- 通关弹窗 -->
 <div class="modal" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
   <div class="modal-box">
-    <img class="modal-top-img" data-src="assets/win_girl.webp" width="80" height="80" alt="win girl" decoding="async">
+    <span class="sprite-img sprite-win modal-top-img" role="img" aria-label="win girl"></span>
     <div class="m-title" id="winTitle">🏆 Congratulations on Clearing the Game</div>
     <div class="txt">You have successfully completed the project and the ICARE Journey!</div>
     <button class="close-btn" type="button" onclick="resetGame()">Play Again</button>
@@ -252,15 +267,8 @@ function openQ(id){
   showModal("modal");
 }
 
-function loadLazyImages(container){
-  container.querySelectorAll("img[data-src]").forEach((img) => {
-    if(!img.src) img.src = img.dataset.src;
-  });
-}
-
 function showModal(id){
   const modal = document.getElementById(id);
-  loadLazyImages(modal);
   modal.style.display = "flex";
 }
 
