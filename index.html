@@ -24,7 +24,7 @@ html,body {
 .bg {
   width: 100vw;
   height: 100vh;
-  background: url(images/bg.jpg) no-repeat center;
+  background: url(bg.jpg) no-repeat center;
   background-size: cover;
   position: absolute;
   top: 0;
@@ -44,11 +44,11 @@ html,body {
   cursor: pointer;
 }
 /* 按键精准定位 */
-.btn1 { left: 10%; bottom: 12%; background-image: url(images/btn1.png); }
-.btn2 { left: 33%; bottom: 12%; background-image: url(images/btn2.png); }
-.btn3 { left: 58%; bottom: 22%; background-image: url(images/btn3.png); }
-.btn4 { right: 18%; top: 48%; background-image: url(images/btn4.png); }
-.btn5 { right: 10%; top: 30%; background-image: url(images/btn5.png); }
+.btn1 { left: 10%; bottom: 12%; background-image: url(btn1.png); }
+.btn2 { left: 33%; bottom: 12%; background-image: url(btn2.png); }
+.btn3 { left: 58%; bottom: 22%; background-image: url(btn3.png); }
+.btn4 { right: 18%; top: 48%; background-image: url(btn4.png); }
+.btn5 { right: 10%; top: 30%; background-image: url(btn5.png); }
 
 /* 进度条 */
 .progress {
@@ -130,6 +130,14 @@ html,body {
   line-height: 1.5;
   margin:10px 0;
 }
+
+/* 关键：自动把图标白色背景变透明 */
+.modal-top-img,
+.opt img,
+.progress img,
+.btn {
+  mix-blend-mode: multiply;
+}
 </style>
 </head>
 <body>
@@ -142,7 +150,7 @@ html,body {
   <div class="btn btn4" onclick="openQ(4)"></div>
   <div class="btn btn5" onclick="openQ(5)"></div>
   <div class="progress">
-    <img src="images/coin.png" alt="coin">
+    <img src="coin.png" alt="coin">
     <span>ICARE Journey Progress: <span id="gotNum">0</span>/5</span>
   </div>
 </div>
@@ -150,14 +158,14 @@ html,body {
 <!-- 选择题弹窗 -->
 <div class="modal" id="modal">
   <div class="modal-box">
-    <img class="modal-top-img" src="images/question.png" alt="question girl">
+    <img class="modal-top-img" src="question.png" alt="question girl">
     <div class="m-title" id="modalTitle"></div>
     <div class="opt" onclick="chooseA()">
-      <img src="images/mushroom.png" alt="mushroom">
+      <img src="mushroom.png" alt="mushroom">
       <span id="optionA"></span>
     </div>
     <div class="opt" onclick="chooseB()">
-      <img src="images/mushroom.png" alt="mushroom">
+      <img src="mushroom.png" alt="mushroom">
       <span id="optionB"></span>
     </div>
     <div class="close-btn" onclick="closeModal()">Try Again</div>
@@ -176,7 +184,7 @@ html,body {
 <!-- 通关弹窗 -->
 <div class="modal" id="winModal">
   <div class="modal-box">
-    <img class="modal-top-img" src="images/win_girl.png" alt="win girl">
+    <img class="modal-top-img" src="win_girl.png" alt="win girl">
     <div class="m-title">🏆 Congratulations on Clearing the Game</div>
     <div class="txt">You have successfully completed the project and the ICARE Journey!</div>
     <div class="close-btn" onclick="resetGame()">Play Again</div>
