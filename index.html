@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bingjie's ICARE Journey</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+html,body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+.container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+.bg {
+  width: 100vw;
+  height: 100vh;
+  background: url(images/bg.jpg) no-repeat center;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* 按键样式 */
+.btn {
+  width: 100px;
+  height: 100px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  border-radius: 0;
+  color: transparent;
+  position: absolute;
+  cursor: pointer;
+}
+/* 按键精准定位 */
+.btn1 { left: 10%; bottom: 12%; background-image: url(images/btn1.png); }
+.btn2 { left: 33%; bottom: 12%; background-image: url(images/btn2.png); }
+.btn3 { left: 58%; bottom: 22%; background-image: url(images/btn3.png); }
+.btn4 { right: 18%; top: 48%; background-image: url(images/btn4.png); }
+.btn5 { right: 10%; top: 30%; background-image: url(images/btn5.png); }
+
+/* 进度条 */
+.progress {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.9);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 16px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress img {
+  width: 20px;
+  height: 20px;
+}
+
+/* 弹窗通用 */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal-box {
+  width: 80%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  position: relative;
+}
+.modal-top-img {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+}
+.m-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+/* 选项左对齐 */
+.opt {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+.opt img {
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+}
+.close-btn {
+  margin-top: 20px;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+}
+.txt {
+  line-height: 1.5;
+  margin:10px 0;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="bg"></div>
+  <div class="btn btn1" onclick="openQ(1)"></div>
+  <div class="btn btn2" onclick="openQ(2)"></div>
+  <div class="btn btn3" onclick="openQ(3)"></div>
+  <div class="btn btn4" onclick="openQ(4)"></div>
+  <div class="btn btn5" onclick="openQ(5)"></div>
+  <div class="progress">
+    <img src="images/coin.png" alt="coin">
+    <span>ICARE Journey Progress: <span id="gotNum">0</span>/5</span>
+  </div>
+</div>
+
+<!-- 选择题弹窗 -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <img class="modal-top-img" src="images/question.png" alt="question girl">
+    <div class="m-title" id="modalTitle"></div>
+    <div class="opt" onclick="chooseA()">
+      <img src="images/mushroom.png" alt="mushroom">
+      <span id="optionA"></span>
+    </div>
+    <div class="opt" onclick="chooseB()">
+      <img src="images/mushroom.png" alt="mushroom">
+      <span id="optionB"></span>
+    </div>
+    <div class="close-btn" onclick="closeModal()">Try Again</div>
+  </div>
+</div>
+
+<!-- 获得道具弹窗（已去掉顶部插图） -->
+<div class="modal" id="rewardModal">
+  <div class="modal-box">
+    <div class="m-title" id="rewardTitle"></div>
+    <div class="txt" id="rewardDesc"></div>
+    <div class="close-btn" onclick="closeReward()">Continue Adventure</div>
+  </div>
+</div>
+
+<!-- 通关弹窗 -->
+<div class="modal" id="winModal">
+  <div class="modal-box">
+    <img class="modal-top-img" src="images/win_girl.png" alt="win girl">
+    <div class="m-title">🏆 Congratulations on Clearing the Game</div>
+    <div class="txt">You have successfully completed the project and the ICARE Journey!</div>
+    <div class="close-btn" onclick="resetGame()">Play Again</div>
+  </div>
+</div>
+
+<script>
+let currentId = 0;
+let items = {1:false,2:false,3:false,4:false,5:false};
+let gotNum = 0;
+
+const questions = {
+  1: {
+    title: "Facing rapid market changes and conservative calculation models, what is your choice?",
+    a: "Clarify all pain points and try to solve problems with new methods",
+    b: "Stick to the original method to avoid mistakes",
+    rewardTitle: "🎉 Congratulations! You obtained ICARE Fragment: Authentic",
+    rewardDesc: "Think calmly before decision-making, act decisively afterwards"
+  },
+  2: {
+    title: "There are many questions about the market and debates over study objectives. What will you do?",
+    a: "Listen and record actively, hold workshops with key stakeholders, and summarize key questions",
+    b: "Follow Sylvain’s advice directly",
+    rewardTitle: "🎉 Congratulations! You obtained ICARE Fragment: Creating Trust",
+    rewardDesc: "Build trust amid uncertainty"
+  },
+  3: {
+    title: "During project execution, you find the agency’s questionnaire only covers key questions. How will you respond?",
+    a: "Connect the current study with previous market insights to ensure consistency and cross-checkable results",
+    b: "Only answer key questions as decided in earlier meetings",
+    rewardTitle: "🎉 Congratulations! You obtained ICARE Fragment: Result-Oriented",
+    rewardDesc: "Always think one step further"
+  },
+  4: {
+    title: "All research results are ready and need to be shared. What is your choice?",
+    a: "Dig deeper into data to build models and cross-check public sources for representative results",
+    b: "Send the report directly and share insights in the meeting",
+    rewardTitle: "🎉 Congratulations! You obtained ICARE Fragment: Inspiring",
+    rewardDesc: "Create value with innovative thinking"
+  },
+  5: {
+    title: "You find OE-RT and Mileage topics affect not only B2C marketing decisions but also strategies of OE, DORD and other departments. What will you do?",
+    a: "Take initiative in cross-department collaboration to align market understanding and strategic direction",
+    b: "Only provide insights and leave strategic decisions to business teams",
+    rewardTitle: "🎉 Congratulations! You obtained ICARE Fragment: Empowerment",
+    rewardDesc: "Keep the courage to move one step forward"
+  }
+};
+
+function openQ(id){
+  currentId = id;
+  const q = questions[id];
+  document.getElementById("modalTitle").innerText = q.title;
+  document.getElementById("optionA").innerText = q.a;
+  document.getElementById("optionB").innerText = q.b;
+  document.getElementById("modal").style.display = "flex";
+}
+
+function chooseA(){
+  document.getElementById("modal").style.display = "none";
+  if(items[currentId]) return;
+
+  items[currentId] = true;
+  gotNum++;
+  document.getElementById("gotNum").innerText = gotNum;
+  
+  const q = questions[currentId];
+  document.getElementById("rewardTitle").innerText = q.rewardTitle;
+  document.getElementById("rewardDesc").innerText = q.rewardDesc;
+  document.getElementById("rewardModal").style.display = "flex";
+
+  if(gotNum >= 5){
+    setTimeout(()=>{
+      document.getElementById("winModal").style.display = "flex";
+    },600);
+  }
+}
+
+function chooseB(){
+  document.getElementById("modal").style.display = "none";
+}
+function closeModal(){
+  document.getElementById("modal").style.display = "none";
+}
+function closeReward(){
+  document.getElementById("rewardModal").style.display = "none";
+}
+function resetGame(){
+  items = {1:false,2:false,3:false,4:false,5:false};
+  gotNum = 0;
+  document.getElementById("gotNum").innerText = 0;
+  document.getElementById("winModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>
