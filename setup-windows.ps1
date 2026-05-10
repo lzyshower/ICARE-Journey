@@ -76,7 +76,10 @@ function Install-WingetPackage {
         $args += @("--override", $Override)
     }
 
-    winget @args
+    # External command stdout is part of a PowerShell function's success output.
+    # Pipe it to the host so callers like Ensure-Python return only their final
+    # hashtable/object, not an Object[] containing winget log lines.
+    winget @args | Out-Host
     if ($LASTEXITCODE -ne 0) {
         throw "winget install failed for $Name ($Id). Exit code: $LASTEXITCODE"
     }
@@ -86,7 +89,8 @@ function Install-WingetPackage {
 
 function Ensure-Git {
     if (Get-Command git -ErrorAction SilentlyContinue) {
-        Write-Host "Git: $((git --version) -join ' ')"
+        $gitVersion = (& git --version) -join ' '
+        Write-Host "Git: $gitVersion"
         return
     }
     if ($SkipPrereqInstall) {
@@ -96,7 +100,8 @@ function Ensure-Git {
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
         throw "Git was installed but is not visible in this PowerShell session. Close PowerShell, reopen it, and rerun this script."
     }
-    Write-Host "Git: $((git --version) -join ' ')"
+    $gitVersion = (& git --version) -join ' '
+    Write-Host "Git: $gitVersion"
 }
 
 function Get-PythonCommand {
@@ -128,7 +133,7 @@ function Get-PythonCommand {
 
 function Ensure-Python {
     try {
-        return Get-PythonCommand
+        return (Get-PythonCommand)
     }
     catch {
         if ($SkipPrereqInstall) {
@@ -137,7 +142,7 @@ function Ensure-Python {
         Install-WingetPackage -Id "Python.Python.3.11" -Name "Python 3.11"
         Refresh-PathFromRegistry
         try {
-            return Get-PythonCommand
+            return (Get-PythonCommand)
         }
         catch {
             throw "Python 3.11 was installed but is not visible in this PowerShell session. Close PowerShell, reopen it, and rerun this script."
@@ -147,9 +152,17 @@ function Ensure-Python {
 
 function Invoke-Python {
     param(
-        [hashtable]$Python,
+        [object]$Python,
         [string[]]$Arguments
     )
+
+    if ($Python -is [array]) {
+        $Python = @($Python)[-1]
+    }
+    if (-not ($Python -is [hashtable])) {
+        throw "Internal script error: Python descriptor must be a hashtable, got $($Python.GetType().FullName). Value: $Python"
+    }
+
     & $Python.Command @($Python.Args + $Arguments)
     if ($LASTEXITCODE -ne 0) {
         throw "Python command failed: $($Python.Command) $($Python.Args -join ' ') $($Arguments -join ' ')"
@@ -207,7 +220,7 @@ function Add-VcToolsWorkload {
         --wait `
         --norestart `
         --add Microsoft.VisualStudio.Workload.VCTools `
-        --includeRecommended
+        --includeRecommended | Out-Host
 
     if ($LASTEXITCODE -ne 0) {
         throw "Visual Studio Installer failed while adding C++ workload. Exit code: $LASTEXITCODE"
@@ -218,7 +231,7 @@ function Add-VcToolsWorkload {
 
 function Ensure-VsBuildTools {
     try {
-        return Get-VcVars64Path
+        return (Get-VcVars64Path)
     }
     catch {
         if ($SkipPrereqInstall) {
@@ -229,12 +242,12 @@ function Ensure-VsBuildTools {
         Install-WingetPackage -Id "Microsoft.VisualStudio.2022.BuildTools" -Name "Visual Studio 2022 Build Tools C++ workload" -Override $override
 
         try {
-            return Get-VcVars64Path
+            return (Get-VcVars64Path)
         }
         catch {
             if (Add-VcToolsWorkload) {
                 try {
-                    return Get-VcVars64Path
+                    return (Get-VcVars64Path)
                 }
                 catch {
                     # Fall through to the actionable error below.
@@ -276,7 +289,7 @@ function Invoke-VcVarsCommand {
 
 Write-Step "Checking prerequisites"
 Ensure-Git
-$python = Ensure-Python
+$python = @(Ensure-Python)[-1]
 Write-Host "Python: $($python.Command) $($python.Args -join ' ') ($($python.Version))"
 $vcvars64 = Ensure-VsBuildTools
 Write-Host "MSVC environment: $vcvars64"
